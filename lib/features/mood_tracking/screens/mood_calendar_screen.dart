@@ -8,7 +8,9 @@ class MoodCalendarScreen extends StatelessWidget {
   final DateTime currentMonth;
   final VoidCallback onAddEntry;
   final ValueChanged<DateTime> onDateSelected;
-  final VoidCallback onChangeMonth;
+  final VoidCallback onNextMonth;
+  final VoidCallback onPreviousMonth;
+  final bool canGoNext;
 
   const MoodCalendarScreen({
     super.key,
@@ -16,7 +18,9 @@ class MoodCalendarScreen extends StatelessWidget {
     required this.currentMonth,
     required this.onAddEntry,
     required this.onDateSelected,
-    required this.onChangeMonth,
+    required this.onNextMonth,
+    required this.onPreviousMonth,
+    required this.canGoNext,
   });
 
   @override
@@ -25,13 +29,18 @@ class MoodCalendarScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           '${_getMonthName(currentMonth.month)} ${currentMonth.year}',
-          style: TextStyle(fontSize: 18),
+          style: const TextStyle(fontSize: 18),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today),
-            onPressed: onChangeMonth,
-            tooltip: 'Выбрать месяц',
+            icon: const Icon(Icons.arrow_back),
+            tooltip: 'Предыдущий месяц',
+            onPressed: onPreviousMonth,
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            tooltip: 'Следующий месяц',
+            onPressed: canGoNext ? onNextMonth : null,
           ),
         ],
       ),
@@ -39,7 +48,7 @@ class MoodCalendarScreen extends StatelessWidget {
         child: Column(
           children: [
             MoodStatsCard(entries: entries, currentMonth: currentMonth),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildWeekDaysHeader(),
             MoodCalendar(
               entries: entries,
@@ -51,7 +60,7 @@ class MoodCalendarScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: onAddEntry,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         tooltip: 'Добавить запись о настроении',
       ),
     );
@@ -60,16 +69,18 @@ class MoodCalendarScreen extends StatelessWidget {
   Widget _buildWeekDaysHeader() {
     const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     return Row(
-      children: weekDays.map((day) => Expanded(
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Text(
-            day,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+      children: weekDays.map((day) {
+        return Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              day,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+            ),
           ),
-        ),
-      )).toList(),
+        );
+      }).toList(),
     );
   }
 

@@ -15,7 +15,7 @@ class MoodContainer extends StatefulWidget {
 class _MoodContainerState extends State<MoodContainer> {
   final Map<DateTime, MoodEntry> _entries = {};
   MoodScreen _currentScreen = MoodScreen.calendar;
-  DateTime _currentMonth = DateTime.now();
+  DateTime _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime? _selectedDate;
   MoodEntry? _editingEntry;
 
@@ -35,36 +35,27 @@ class _MoodContainerState extends State<MoodContainer> {
     });
   }
 
-  void _showNextMonth() {
-    setState(() {
-      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 1);
-    });
-  }
-
-  void _showPreviousMonth() {
+  void _previousMonth() {
     setState(() {
       _currentMonth = DateTime(_currentMonth.year, _currentMonth.month - 1, 1);
     });
   }
 
-  void _changeMonth() {
-    showDatePicker(
-      context: context,
-      initialDate: _currentMonth,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    ).then((selectedDate) {
-      if (selectedDate != null) {
-        setState(() {
-          _currentMonth = DateTime(selectedDate.year, selectedDate.month, 1);
-        });
-      }
+  void _nextMonth() {
+    final now = DateTime.now();
+    final next = DateTime(_currentMonth.year, _currentMonth.month + 1, 1);
+    final thisMonth = DateTime(now.year, now.month);
+
+    if (next.isAfter(thisMonth)) return;
+    setState(() {
+      _currentMonth = next;
     });
   }
 
   void _addOrUpdateEntry(MoodEntry entry) {
     setState(() {
-      final normalizedDate = DateTime(entry.date.year, entry.date.month, entry.date.day);
+      final normalizedDate =
+      DateTime(entry.date.year, entry.date.month, entry.date.day);
       _entries[normalizedDate] = entry;
       _showCalendar();
     });
@@ -104,25 +95,25 @@ class _MoodContainerState extends State<MoodContainer> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Запись за ${_formatDate(date)}'),
-          content: Text('Что вы хотите сделать с этой записью?'),
+          content: const Text('Что вы хотите сделать с этой записью?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _showEntryForm(date, existingEntry);
               },
-              child: Text('Редактировать'),
+              child: const Text('Редактировать'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteEntry(date);
               },
-              child: Text('Удалить', style: TextStyle(color: Colors.red)),
+              child: const Text('Удалить', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Отмена'),
+              child: const Text('Отмена'),
             ),
           ],
         ),
@@ -136,6 +127,13 @@ class _MoodContainerState extends State<MoodContainer> {
     return '${date.day}.${date.month}.${date.year}';
   }
 
+  bool _canGoNextMonth() {
+    final now = DateTime.now();
+    final next = DateTime(_currentMonth.year, _currentMonth.month + 1, 1);
+    final thisMonth = DateTime(now.year, now.month);
+    return !next.isAfter(thisMonth);
+  }
+
   @override
   Widget build(BuildContext context) {
     switch (_currentScreen) {
@@ -145,7 +143,9 @@ class _MoodContainerState extends State<MoodContainer> {
           currentMonth: _currentMonth,
           onAddEntry: () => _showEntryForm(DateTime.now()),
           onDateSelected: _handleDateSelected,
-          onChangeMonth: _changeMonth,
+          onNextMonth: _nextMonth,
+          onPreviousMonth: _previousMonth,
+          canGoNext: _canGoNextMonth(),
         );
 
       case MoodScreen.entry:
