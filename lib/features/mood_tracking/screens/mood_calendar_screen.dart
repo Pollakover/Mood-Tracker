@@ -38,12 +38,9 @@ class MoodCalendarScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Статистика за месяц
             MoodStatsCard(entries: entries, currentMonth: currentMonth),
             SizedBox(height: 16),
-            // Заголовок дней недели
             _buildWeekDaysHeader(),
-            // Основной календарь
             MoodCalendar(
               entries: entries,
               selectedMonth: currentMonth,

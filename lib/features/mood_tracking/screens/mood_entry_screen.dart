@@ -27,7 +27,6 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
   @override
   void initState() {
     super.initState();
-    // Если редактируем существующую запись, заполняем поля
     if (widget.existingEntry != null) {
       _selectedMood = widget.existingEntry!.moodValue;
       _noteController.text = widget.existingEntry!.note ?? '';
@@ -58,21 +57,18 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Дата записи
             Text(
               'Дата: ${_formatDate(widget.selectedDate)}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 20),
 
-            // Заголовок выбора настроения
             Text(
               'Как вы себя чувствуете?',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 12),
 
-            // Селектор настроения
             MoodSelector(
               selectedMood: _selectedMood,
               onMoodSelected: (mood) {
@@ -94,7 +90,6 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
             ),
             SizedBox(height: 24),
 
-            // Кнопки действий
             Row(
               children: [
                 Expanded(

@@ -30,10 +30,9 @@ class MoodCalendar extends StatelessWidget {
       gridDays.add(DateTime(selectedMonth.year, selectedMonth.month, i));
     }
 
-    // Убираем фиксированную высоту и используем shrinkWrap
     return GridView.builder(
-      shrinkWrap: true, // Важно: позволяет GridView занимать только нужное место
-      physics: const NeverScrollableScrollPhysics(), // Отключаем скролл у самого GridView
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1.0,
@@ -64,7 +63,6 @@ class MoodCalendar extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                // Число месяца
                 Positioned(
                   top: 2,
                   right: 2,
@@ -77,7 +75,6 @@ class MoodCalendar extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Смайлик настроения
                 if (moodConfig != null)
                   Center(
                     child: Text(

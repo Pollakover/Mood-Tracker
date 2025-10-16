@@ -19,7 +19,7 @@ class MoodSelector extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: SingleChildScrollView( // Добавляем горизонтальную прокрутку
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -27,7 +27,7 @@ class MoodSelector extends StatelessWidget {
             final isSelected = selectedMood == moodOption.value;
 
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4.0), // Добавляем отступы между элементами
+              margin: const EdgeInsets.symmetric(horizontal: 4.0),
               child: GestureDetector(
                 onTap: () => onMoodSelected(moodOption.value),
                 child: Container(

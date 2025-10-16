@@ -1,5 +1,3 @@
-// Файл: lib/features/mood_tracking/widgets/mood_stats_card.dart
-
 import 'package:flutter/material.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
@@ -31,7 +29,7 @@ class MoodStatsCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, // Важно: предотвращает переполнение
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Статистика за ${_getMonthName(currentMonth.month)}',
@@ -40,11 +38,9 @@ class MoodStatsCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Используем ListView для скролла статистики
             ConstrainedBox(
               constraints: BoxConstraints(
-                maxHeight: 300, // Ограничиваем высоту статистики
+                maxHeight: 300,
               ),
               child: ListView(
                 shrinkWrap: true,
@@ -63,23 +59,19 @@ class MoodStatsCard extends StatelessWidget {
     );
   }
 
-  /// Вычисляет статистику по настроениям за текущий месяц
   Map<MoodConfig, int> _calculateMonthlyStats() {
     final stats = <MoodConfig, int>{};
 
-    // Инициализируем все возможные настроения нулевыми значениями
     for (final mood in AppConstants.availableMoods) {
       stats[mood] = 0;
     }
 
-    // Подсчитываем записи за текущий месяц
     for (final entry in entries.values) {
       if (entry.date.year == currentMonth.year &&
           entry.date.month == currentMonth.month) {
-        // Безопасный поиск настроения - исправление ошибки null check
         final moodConfig = AppConstants.availableMoods.firstWhere(
               (mood) => mood.value == entry.moodValue,
-          orElse: () => AppConstants.availableMoods[2], // neutral по умолчанию
+          orElse: () => AppConstants.availableMoods[2],
         );
         stats[moodConfig] = stats[moodConfig]! + 1;
       }
@@ -88,7 +80,6 @@ class MoodStatsCard extends StatelessWidget {
     return stats;
   }
 
-  /// Строит прогресс-бары для каждого настроения
   List<Widget> _buildMoodProgressBars(BuildContext context, Map<MoodConfig, int> stats, int total) {
     return stats.entries.map((entry) {
       final mood = entry.key;
@@ -142,7 +133,6 @@ class MoodStatsCard extends StatelessWidget {
     }).toList();
   }
 
-  /// Секция с доминирующим настроением
   Widget _buildDominantMoodSection(BuildContext context, MoodConfig dominantMood, int count, int total) {
     final percentage = (count / total * 100);
 
@@ -190,7 +180,6 @@ class MoodStatsCard extends StatelessWidget {
     );
   }
 
-  /// Находит наиболее часто встречающееся настроение
   MoodConfig? _findDominantMood(Map<MoodConfig, int> stats) {
     MoodConfig? dominantMood;
     int maxCount = 0;
@@ -201,12 +190,9 @@ class MoodStatsCard extends StatelessWidget {
         dominantMood = entry.key;
       }
     }
-
-    // Возвращаем null если нет записей или все записи с нулевым счетом
     return maxCount > 0 ? dominantMood : null;
   }
 
-  /// Состояние при отсутствии данных
   Widget _buildEmptyState(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(16.0),

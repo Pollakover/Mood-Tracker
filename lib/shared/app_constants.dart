@@ -1,5 +1,3 @@
-// Файл: lib/shared/app_constants.dart
-
 import 'package:flutter/material.dart';
 
 class MoodConfig {
@@ -50,11 +48,10 @@ class AppConstants {
     ),
   ];
 
-  // Метод для поиска конфигурации по значению
   static MoodConfig getMoodConfig(String value) {
     return availableMoods.firstWhere(
           (mood) => mood.value == value,
-      orElse: () => availableMoods[2], // neutral по умолчанию
+      orElse: () => availableMoods[2],
     );
   }
 }
