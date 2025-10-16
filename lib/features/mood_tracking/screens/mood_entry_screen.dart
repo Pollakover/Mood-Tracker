@@ -78,8 +78,6 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
               },
             ),
             SizedBox(height: 24),
-
-            // Поле для заметки
             TextField(
               controller: _noteController,
               decoration: InputDecoration(

@@ -76,7 +76,6 @@ class MoodStatsCard extends StatelessWidget {
         stats[moodConfig] = stats[moodConfig]! + 1;
       }
     }
-
     return stats;
   }
 
