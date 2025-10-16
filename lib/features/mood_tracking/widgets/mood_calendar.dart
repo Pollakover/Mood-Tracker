@@ -30,8 +30,10 @@ class MoodCalendar extends StatelessWidget {
       gridDays.add(DateTime(selectedMonth.year, selectedMonth.month, i));
     }
 
+    // Убираем фиксированную высоту и используем shrinkWrap
     return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true, // Важно: позволяет GridView занимать только нужное место
+      physics: const NeverScrollableScrollPhysics(), // Отключаем скролл у самого GridView
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1.0,
@@ -51,34 +53,36 @@ class MoodCalendar extends StatelessWidget {
         return GestureDetector(
           onTap: () => onDateSelected(date),
           child: Container(
-            margin: const EdgeInsets.all(2.0),
+            margin: const EdgeInsets.all(1.0),
             decoration: BoxDecoration(
               color: moodConfig?.color.withOpacity(0.3) ?? Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(6.0),
               border: Border.all(
                 color: isToday ? Colors.blue : Colors.transparent,
-                width: 2.0,
+                width: 1.5,
               ),
             ),
             child: Stack(
               children: [
+                // Число месяца
                 Positioned(
-                  top: 4,
-                  right: 4,
+                  top: 2,
+                  right: 2,
                   child: Text(
                     '${date.day}',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                       color: isToday ? Colors.blue : Colors.grey.shade700,
                       fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ),
+                // Смайлик настроения
                 if (moodConfig != null)
                   Center(
                     child: Text(
                       moodConfig.emoji,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
               ],

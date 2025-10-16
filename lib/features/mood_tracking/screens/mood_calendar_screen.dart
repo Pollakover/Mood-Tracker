@@ -35,22 +35,22 @@ class MoodCalendarScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Статистика за месяц
-          MoodStatsCard(entries: entries, currentMonth: currentMonth),
-          SizedBox(height: 16),
-          // Заголовок дней недели
-          _buildWeekDaysHeader(),
-          // Основной календарь
-          Expanded(
-            child: MoodCalendar(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Статистика за месяц
+            MoodStatsCard(entries: entries, currentMonth: currentMonth),
+            SizedBox(height: 16),
+            // Заголовок дней недели
+            _buildWeekDaysHeader(),
+            // Основной календарь
+            MoodCalendar(
               entries: entries,
               selectedMonth: currentMonth,
               onDateSelected: onDateSelected,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: onAddEntry,
