@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
 
 class MoodSelector extends StatelessWidget {
@@ -45,10 +46,7 @@ class MoodSelector extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        moodOption.emoji,
-                        style: const TextStyle(fontSize: 24),
-                      ),
+                      _buildEmojiImage(moodOption),
                       const SizedBox(height: 4),
                       Text(
                         moodOption.label,
@@ -66,6 +64,30 @@ class MoodSelector extends StatelessWidget {
           }).toList(),
         ),
       ),
+    );
+  }
+
+  Widget _buildEmojiImage(MoodConfig moodOption) {
+    return CachedNetworkImage(
+      imageUrl: moodOption.imageUrl,
+      width: 32,
+      height: 32,
+      placeholder: (context, url) => Container(
+        width: 32,
+        height: 32,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(strokeWidth: 2),
+      ),
+      errorWidget: (context, url, error) => Container(
+        width: 32,
+        height: 32,
+        alignment: Alignment.center,
+        child: Text(
+          moodOption.emoji,
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+      fit: BoxFit.contain,
     );
   }
 }
