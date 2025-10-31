@@ -1,4 +1,4 @@
-// lib/features/mood_tracking/screens/records_list_screen.dart
+// records_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
@@ -20,11 +20,11 @@ class RecordsListScreen extends StatelessWidget {
         foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/mood'), // Кнопка назад в календарь
+          onPressed: () => context.go('/mood'),
         ),
       ),
       body: records.isEmpty
-          ? _buildEmptyState(context) // Передаем context
+          ? _buildEmptyState(context)
           : ListView.builder(
         itemCount: records.length,
         itemBuilder: (context, index) {
@@ -69,10 +69,10 @@ class RecordsListScreen extends StatelessWidget {
                     ),
                 ],
               ),
-              trailing: Icon(
+              trailing: const Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: Colors.grey.shade400,
+                color: Colors.grey,
               ),
               onTap: () {
                 _showEntryDetails(context, entry);
@@ -84,7 +84,6 @@ class RecordsListScreen extends StatelessWidget {
     );
   }
 
-  // Добавляем параметр context
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
@@ -115,7 +114,7 @@ class RecordsListScreen extends StatelessWidget {
           ElevatedButton.icon(
             icon: const Icon(Icons.calendar_today),
             label: const Text('Перейти к календарю'),
-            onPressed: () => context.go('/mood'), // Теперь context доступен
+            onPressed: () => context.go('/mood'),
           ),
         ],
       ),
@@ -169,7 +168,7 @@ class RecordsListScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.pop(context),
             child: const Text('Закрыть'),
           ),
         ],

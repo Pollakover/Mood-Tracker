@@ -1,3 +1,4 @@
+// mood_entry_screen.dart
 import 'package:flutter/material.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/features/mood_tracking/widgets/mood_selector.dart';
@@ -42,8 +43,13 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
       moodValue: _selectedMood!,
       note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
     );
-
     widget.onSave(newEntry);
+    Navigator.pop(context);
+  }
+
+  void _cancel() {
+    widget.onCancel();
+    Navigator.pop(context);
   }
 
   @override
@@ -51,6 +57,10 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.existingEntry == null ? 'Новая запись' : 'Редактировать запись'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _cancel,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,13 +71,13 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
               'Дата: ${_formatDate(widget.selectedDate)}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             Text(
               'Как вы себя чувствуете?',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             MoodSelector(
               selectedMood: _selectedMood,
@@ -77,16 +87,16 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
                 });
               },
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             TextField(
               controller: _noteController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Заметка (необязательно)',
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             Row(
               children: [
@@ -96,11 +106,11 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
                     child: Text(widget.existingEntry == null ? 'Добавить' : 'Сохранить'),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: widget.onCancel,
-                    child: Text('Отмена'),
+                    onPressed: _cancel,
+                    child: const Text('Отмена'),
                   ),
                 ),
               ],

@@ -32,12 +32,18 @@ class _MoodContainerState extends State<MoodContainer> {
     });
   }
 
-  void _showEntryForm(DateTime date, [MoodEntry? existingEntry]) {
-    setState(() {
-      _currentScreen = MoodScreen.entry;
-      _selectedDate = date;
-      _editingEntry = existingEntry;
-    });
+  void _showEntryForm(DateTime date, [MoodEntry? existingEntry]) async {
+   await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MoodEntryScreen(
+          selectedDate: date,
+          existingEntry: existingEntry,
+          onSave: _addOrUpdateEntry,
+          onCancel: _showCalendar,
+        ),
+      ),
+    );
   }
 
   void _previousMonth() {
@@ -92,6 +98,7 @@ class _MoodContainerState extends State<MoodContainer> {
     final existingEntry = _repository.getByDate(date);
 
     if (existingEntry != null) {
+      // СТРАНИЧНАЯ НАВИГАЦИЯ - showDialog для диалогового окна
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -100,20 +107,20 @@ class _MoodContainerState extends State<MoodContainer> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context); // Закрываем диалог
                 _showEntryForm(date, existingEntry);
               },
               child: const Text('Редактировать'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context); // Закрываем диалог
                 _deleteEntry(date);
               },
               child: const Text('Удалить', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pop(context), // Закрываем диалог
               child: const Text('Отмена'),
             ),
           ],
@@ -141,9 +148,6 @@ class _MoodContainerState extends State<MoodContainer> {
     setState(() => _selectedTab = index);
     switch (index) {
       case 0:
-        if (_currentScreen != MoodScreen.calendar) {
-          _showCalendar();
-        }
         break;
       case 1:
         context.go('/list');
@@ -157,27 +161,15 @@ class _MoodContainerState extends State<MoodContainer> {
   @override
   Widget build(BuildContext context) {
     Widget content;
-    switch (_currentScreen) {
-      case MoodScreen.calendar:
-        content = MoodCalendarScreen(
-          entries: _entries,
-          currentMonth: _currentMonth,
-          onAddEntry: () => _showEntryForm(DateTime.now()),
-          onDateSelected: _handleDateSelected,
-          onNextMonth: _nextMonth,
-          onPreviousMonth: _previousMonth,
-          canGoNext: _canGoNextMonth(),
-        );
-        break;
-      case MoodScreen.entry:
-        content = MoodEntryScreen(
-          selectedDate: _selectedDate!,
-          existingEntry: _editingEntry,
-          onSave: _addOrUpdateEntry,
-          onCancel: _showCalendar,
-        );
-        break;
-    }
+    content = MoodCalendarScreen(
+      entries: _entries,
+      currentMonth: _currentMonth,
+      onAddEntry: () => _showEntryForm(DateTime.now()),
+      onDateSelected: (date) => _handleDateSelected(date),
+      onNextMonth: _nextMonth,
+      onPreviousMonth: _previousMonth,
+      canGoNext: _canGoNextMonth(),
+    );
 
     return Scaffold(
       appBar: AppBar(

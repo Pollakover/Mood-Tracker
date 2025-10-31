@@ -1,5 +1,4 @@
 // lib/routes/app_router.dart
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mood_tracker/features/mood_tracking/state/mood_container.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/home_screen.dart';
@@ -13,12 +12,12 @@ class AppRouter {
 
   AppRouter() {
     router = GoRouter(
-      initialLocation: '/home', // Изменено с '/mood' на '/home'
+      initialLocation: '/home',
       routes: <GoRoute>[
         GoRoute(
           path: '/',
           name: 'root',
-          redirect: (context, state) => '/home', // Редирект с корня на главную
+          redirect: (context, state) => '/home',
         ),
         GoRoute(
           path: '/home',
