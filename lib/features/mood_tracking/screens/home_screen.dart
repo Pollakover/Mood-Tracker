@@ -42,25 +42,6 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             const Divider(),
-            // const SizedBox(height: 8),
-            // const Text('Примеры навигации:'),
-            // const SizedBox(height: 8),
-
-            // СТРАНИЧНАЯ НАВИГАЦИЯ - пример горизонтальной навигации
-            // ElevatedButton(
-            //   onPressed: () {
-            //     // СТРАНИЧНАЯ НАВИГАЦИЯ - горизонтальная через pushReplacement
-            //     Navigator.of(context).pushReplacement(
-            //       MaterialPageRoute(
-            //         builder: (_) => Scaffold(
-            //           appBar: AppBar(title: const Text('Замещённый экран')),
-            //           body: const Center(child: Text('Это пример pushReplacement')),
-            //         ),
-            //       ),
-            //     );
-            //   },
-            //   child: const Text('Пример pushReplacement (горизонтальная)'),
-            // ),
           ],
         ),
       ),

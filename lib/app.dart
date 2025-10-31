@@ -1,6 +1,5 @@
 // lib/app.dart
 import 'package:flutter/material.dart';
-import 'package:mood_tracker/features/mood_tracking/state/mood_container.dart';
 import 'package:mood_tracker/routes/app_router.dart';
 
 class MoodTrackerApp extends StatelessWidget {

@@ -6,8 +6,6 @@ import 'package:mood_tracker/features/mood_tracking/screens/mood_calendar_screen
 import 'package:mood_tracker/features/mood_tracking/screens/mood_entry_screen.dart';
 import 'package:mood_tracker/models/record_repository.dart';
 
-enum MoodScreen { calendar, entry }
-
 class MoodContainer extends StatefulWidget {
   const MoodContainer({super.key});
 
@@ -17,30 +15,21 @@ class MoodContainer extends StatefulWidget {
 
 class _MoodContainerState extends State<MoodContainer> {
   final RecordRepository _repository = RecordRepository();
-  MoodScreen _currentScreen = MoodScreen.calendar;
   DateTime _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
-  DateTime? _selectedDate;
-  MoodEntry? _editingEntry;
 
   Map<DateTime, MoodEntry> get _entries => _repository.getEntriesMap();
 
-  void _showCalendar() {
-    setState(() {
-      _currentScreen = MoodScreen.calendar;
-      _selectedDate = null;
-      _editingEntry = null;
-    });
-  }
-
   void _showEntryForm(DateTime date, [MoodEntry? existingEntry]) async {
-   await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => MoodEntryScreen(
           selectedDate: date,
           existingEntry: existingEntry,
           onSave: _addOrUpdateEntry,
-          onCancel: _showCalendar,
+          onCancel: () {
+            Navigator.pop(context);
+          },
         ),
       ),
     );
@@ -65,9 +54,7 @@ class _MoodContainerState extends State<MoodContainer> {
 
   void _addOrUpdateEntry(MoodEntry entry) {
     _repository.add(entry);
-    setState(() {
-      _showCalendar();
-    });
+    setState(() {});
   }
 
   void _deleteEntry(DateTime date) {
@@ -98,7 +85,6 @@ class _MoodContainerState extends State<MoodContainer> {
     final existingEntry = _repository.getByDate(date);
 
     if (existingEntry != null) {
-      // СТРАНИЧНАЯ НАВИГАЦИЯ - showDialog для диалогового окна
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -107,20 +93,20 @@ class _MoodContainerState extends State<MoodContainer> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Закрываем диалог
+                Navigator.pop(context);
                 _showEntryForm(date, existingEntry);
               },
               child: const Text('Редактировать'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Закрываем диалог
+                Navigator.pop(context);
                 _deleteEntry(date);
               },
               child: const Text('Удалить', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context), // Закрываем диалог
+              onPressed: () => Navigator.pop(context),
               child: const Text('Отмена'),
             ),
           ],
@@ -160,17 +146,6 @@ class _MoodContainerState extends State<MoodContainer> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content;
-    content = MoodCalendarScreen(
-      entries: _entries,
-      currentMonth: _currentMonth,
-      onAddEntry: () => _showEntryForm(DateTime.now()),
-      onDateSelected: (date) => _handleDateSelected(date),
-      onNextMonth: _nextMonth,
-      onPreviousMonth: _previousMonth,
-      canGoNext: _canGoNextMonth(),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -179,7 +154,15 @@ class _MoodContainerState extends State<MoodContainer> {
         ),
         backgroundColor: Colors.blue,
       ),
-      body: content,
+      body: MoodCalendarScreen(
+        entries: _entries,
+        currentMonth: _currentMonth,
+        onAddEntry: () => _showEntryForm(DateTime.now()),
+        onDateSelected: (date) => _handleDateSelected(date),
+        onNextMonth: _nextMonth,
+        onPreviousMonth: _previousMonth,
+        canGoNext: _canGoNextMonth(),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,
         onTap: _onBottomNavTapped,

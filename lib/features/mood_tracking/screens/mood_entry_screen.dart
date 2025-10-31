@@ -48,7 +48,6 @@ class _MoodEntryScreenState extends State<MoodEntryScreen> {
   }
 
   void _cancel() {
-    widget.onCancel();
     Navigator.pop(context);
   }
 

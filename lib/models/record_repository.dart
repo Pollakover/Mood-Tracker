@@ -16,7 +16,6 @@ class RecordRepository {
   }
 
   void add(MoodEntry r) {
-    // Удаляем старую запись на эту дату (если есть)
     _records.removeWhere((record) =>
     record.date.year == r.date.year &&
         record.date.month == r.date.month &&
