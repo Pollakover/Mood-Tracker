@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
+import 'package:go_router/go_router.dart';
 
 class MoodCalendar extends StatelessWidget {
   final Map<DateTime, MoodEntry> entries;

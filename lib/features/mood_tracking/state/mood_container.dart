@@ -1,7 +1,10 @@
+// mood_container.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/mood_calendar_screen.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/mood_entry_screen.dart';
+import 'package:mood_tracker/models/record_repository.dart';
 
 enum MoodScreen { calendar, entry }
 
@@ -13,11 +16,13 @@ class MoodContainer extends StatefulWidget {
 }
 
 class _MoodContainerState extends State<MoodContainer> {
-  final Map<DateTime, MoodEntry> _entries = {};
+  final RecordRepository _repository = RecordRepository();
   MoodScreen _currentScreen = MoodScreen.calendar;
   DateTime _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime? _selectedDate;
   MoodEntry? _editingEntry;
+
+  Map<DateTime, MoodEntry> get _entries => _repository.getEntriesMap();
 
   void _showCalendar() {
     setState(() {
@@ -53,42 +58,38 @@ class _MoodContainerState extends State<MoodContainer> {
   }
 
   void _addOrUpdateEntry(MoodEntry entry) {
+    _repository.add(entry);
     setState(() {
-      final normalizedDate =
-      DateTime(entry.date.year, entry.date.month, entry.date.day);
-      _entries[normalizedDate] = entry;
       _showCalendar();
     });
   }
 
   void _deleteEntry(DateTime date) {
-    setState(() {
-      final normalizedDate = DateTime(date.year, date.month, date.day);
-      final removedEntry = _entries.remove(normalizedDate);
+    final removedEntry = _repository.getByDate(date);
+    _repository.deleteByDate(date);
 
-      if (removedEntry != null) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Запись за ${_formatDate(date)} удалена'),
-            action: SnackBarAction(
-              label: 'Отменить',
-              onPressed: () {
-                setState(() {
-                  _entries[normalizedDate] = removedEntry;
-                });
-              },
-            ),
-            duration: const Duration(seconds: 3),
+    setState(() {});
+
+    if (removedEntry != null) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Запись за ${_formatDate(date)} удалена'),
+          action: SnackBarAction(
+            label: 'Отменить',
+            onPressed: () {
+              _repository.add(removedEntry);
+              setState(() {});
+            },
           ),
-        );
-      }
-    });
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void _handleDateSelected(DateTime date) {
-    final normalizedDate = DateTime(date.year, date.month, date.day);
-    final existingEntry = _entries[normalizedDate];
+    final existingEntry = _repository.getByDate(date);
 
     if (existingEntry != null) {
       showDialog(
@@ -134,11 +135,31 @@ class _MoodContainerState extends State<MoodContainer> {
     return !next.isAfter(thisMonth);
   }
 
+  int _selectedTab = 0;
+
+  void _onBottomNavTapped(int index) {
+    setState(() => _selectedTab = index);
+    switch (index) {
+      case 0:
+        if (_currentScreen != MoodScreen.calendar) {
+          _showCalendar();
+        }
+        break;
+      case 1:
+        context.go('/list');
+        break;
+      case 2:
+        context.go('/settings');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget content;
     switch (_currentScreen) {
       case MoodScreen.calendar:
-        return MoodCalendarScreen(
+        content = MoodCalendarScreen(
           entries: _entries,
           currentMonth: _currentMonth,
           onAddEntry: () => _showEntryForm(DateTime.now()),
@@ -147,14 +168,49 @@ class _MoodContainerState extends State<MoodContainer> {
           onPreviousMonth: _previousMonth,
           canGoNext: _canGoNextMonth(),
         );
-
+        break;
       case MoodScreen.entry:
-        return MoodEntryScreen(
+        content = MoodEntryScreen(
           selectedDate: _selectedDate!,
           existingEntry: _editingEntry,
           onSave: _addOrUpdateEntry,
           onCancel: _showCalendar,
         );
+        break;
     }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Трекер настроений',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
+      ),
+      body: content,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedTab,
+        onTap: _onBottomNavTapped,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Календарь',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Список',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Настройки',
+          ),
+        ],
+      ),
+    );
   }
 }

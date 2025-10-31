@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
 
+import 'package:mood_tracker/models/record_repository.dart';
+
 class MoodStatsCard extends StatelessWidget {
   final Map<DateTime, MoodEntry> entries;
   final DateTime currentMonth;
@@ -61,12 +63,14 @@ class MoodStatsCard extends StatelessWidget {
 
   Map<MoodConfig, int> _calculateMonthlyStats() {
     final stats = <MoodConfig, int>{};
+    final repository = RecordRepository();
+    final allEntries = repository.getAll();
 
     for (final mood in AppConstants.availableMoods) {
       stats[mood] = 0;
     }
 
-    for (final entry in entries.values) {
+    for (final entry in allEntries) {
       if (entry.date.year == currentMonth.year &&
           entry.date.month == currentMonth.month) {
         final moodConfig = AppConstants.availableMoods.firstWhere(
