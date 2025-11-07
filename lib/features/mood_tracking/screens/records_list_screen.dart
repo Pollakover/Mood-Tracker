@@ -1,16 +1,18 @@
-// records_list_screen.dart
+// lib/features/mood_tracking/screens/records_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
-import 'package:mood_tracker/models/record_repository.dart';
+import 'package:mood_tracker/features/mood_tracking/models/record_repository.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
+import 'package:mood_tracker/shared/service_locator.dart';
 
 class RecordsListScreen extends StatelessWidget {
   const RecordsListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final RecordRepository repository = RecordRepository();
+    // Получаем репозиторий через GetIt (без необходимости в context)
+    final RecordRepository repository = getIt<RecordRepository>();
     final List<MoodEntry> records = repository.getRecordsSortedByDate();
 
     return Scaffold(

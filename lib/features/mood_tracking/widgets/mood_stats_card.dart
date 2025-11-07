@@ -1,8 +1,9 @@
+// lib/features/mood_tracking/widgets/mood_stats_card.dart
 import 'package:flutter/material.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
-
-import 'package:mood_tracker/models/record_repository.dart';
+import 'package:mood_tracker/shared/service_locator.dart';
+import 'package:mood_tracker/features/mood_tracking/models/record_repository.dart';
 
 class MoodStatsCard extends StatelessWidget {
   final Map<DateTime, MoodEntry> entries;
@@ -41,7 +42,7 @@ class MoodStatsCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ConstrainedBox(
-              constraints: BoxConstraints(
+              constraints: const BoxConstraints(
                 maxHeight: 300,
               ),
               child: ListView(
@@ -63,7 +64,7 @@ class MoodStatsCard extends StatelessWidget {
 
   Map<MoodConfig, int> _calculateMonthlyStats() {
     final stats = <MoodConfig, int>{};
-    final repository = RecordRepository();
+    final repository = getIt.get<RecordRepository>();
     final allEntries = repository.getAll();
 
     for (final mood in AppConstants.availableMoods) {

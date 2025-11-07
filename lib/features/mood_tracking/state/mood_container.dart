@@ -1,10 +1,12 @@
-// mood_container.dart
+// lib/features/mood_tracking/state/mood_container.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/mood_calendar_screen.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/mood_entry_screen.dart';
-import 'package:mood_tracker/models/record_repository.dart';
+import 'package:mood_tracker/features/mood_tracking/models/record_repository.dart';
+import 'package:mood_tracker/shared/dependency_container.dart';
+import 'package:mood_tracker/shared/service_locator.dart';
 
 class MoodContainer extends StatefulWidget {
   const MoodContainer({super.key});
@@ -14,8 +16,17 @@ class MoodContainer extends StatefulWidget {
 }
 
 class _MoodContainerState extends State<MoodContainer> {
-  final RecordRepository _repository = RecordRepository();
+  late RecordRepository _repositoryFromInherited;
+
   DateTime _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _repositoryFromInherited = DependencyContainer.of(context).recordRepository;
+  }
+
+  RecordRepository get _repository => _repositoryFromInherited;
 
   Map<DateTime, MoodEntry> get _entries => _repository.getEntriesMap();
 
@@ -168,7 +179,7 @@ class _MoodContainerState extends State<MoodContainer> {
         onTap: _onBottomNavTapped,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
-        selectedLabelStyle: TextStyle(
+        selectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.bold,
         ),
         items: const [
