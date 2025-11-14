@@ -5,21 +5,18 @@ import 'package:mood_tracker/shared/app_constants.dart';
 import 'package:mood_tracker/shared/providers.dart';
 
 class MoodStatsCard extends ConsumerWidget {
-  const MoodStatsCard({super.key, required Map<DateTime, MoodEntry> entries, required DateTime currentMonth});
+  const MoodStatsCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entries = ref.watch(moodEntriesProvider);
     final currentMonth = ref.watch(currentMonthProvider);
     final repository = ref.read(recordRepositoryProvider);
-
     final monthlyStats = _calculateMonthlyStats(repository.getAll(), currentMonth);
     final totalDaysWithEntries = monthlyStats.values.fold(0, (sum, count) => sum + count);
-
     if (totalDaysWithEntries == 0) {
       return _buildEmptyState(context);
     }
-
     final dominantMood = _findDominantMood(monthlyStats);
 
     return Card(
@@ -73,7 +70,6 @@ class MoodStatsCard extends ConsumerWidget {
     return stats;
   }
 
-  // Остальные методы остаются без изменений...
   List<Widget> _buildMoodProgressBars(BuildContext context, Map<MoodConfig, int> stats, int total) {
     return stats.entries.map((entry) {
       final mood = entry.key;

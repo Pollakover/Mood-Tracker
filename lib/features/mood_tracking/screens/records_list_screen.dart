@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
 import 'package:mood_tracker/shared/providers.dart';
+import 'package:mood_tracker/features/mood_tracking/widgets/app_bottom_navigation_bar.dart';
 
 class RecordsListScreen extends ConsumerWidget {
   const RecordsListScreen({super.key});
@@ -17,10 +18,6 @@ class RecordsListScreen extends ConsumerWidget {
         title: const Text('Список записей'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/mood'),
-        ),
       ),
       body: records.isEmpty
           ? _buildEmptyState(context)
@@ -61,10 +58,10 @@ class RecordsListScreen extends ConsumerWidget {
           );
         },
       ),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 1),
     );
   }
 
-  // Остальные методы остаются без изменений...
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(

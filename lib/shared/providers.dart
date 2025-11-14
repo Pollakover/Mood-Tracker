@@ -30,6 +30,13 @@ final moodEntriesProvider = Provider<Map<DateTime, MoodEntry>>((ref) {
 
 // Провайдер для отсортированного списка записей
 final sortedMoodEntriesProvider = Provider<List<MoodEntry>>((ref) {
-  final repository = ref.watch(recordRepositoryProvider);
+  final entriesMap = ref.watch(moodEntriesProvider);
+  final repository = ref.read(recordRepositoryProvider);
   return repository.getRecordsSortedByDate();
 });
+
+// Функция для обновления всех связанных провайдеров
+void refreshAllProviders(WidgetRef ref) {
+  ref.refresh(moodEntriesProvider);
+  ref.refresh(sortedMoodEntriesProvider);
+}

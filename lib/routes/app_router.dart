@@ -1,7 +1,6 @@
-// lib/routes/app_router.dart
 import 'package:go_router/go_router.dart';
-import 'package:mood_tracker/features/mood_tracking/state/mood_container.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/home_screen.dart';
+import 'package:mood_tracker/features/mood_tracking/screens/mood_calendar_screen.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/records_list_screen.dart';
 import 'package:mood_tracker/features/mood_tracking/screens/settings_screen.dart';
 
@@ -27,7 +26,7 @@ class AppRouter {
         GoRoute(
           path: '/mood',
           name: 'mood',
-          builder: (context, state) => const MoodContainer(),
+          builder: (context, state) => const MoodCalendarScreen(),
         ),
         GoRoute(
           path: '/list',

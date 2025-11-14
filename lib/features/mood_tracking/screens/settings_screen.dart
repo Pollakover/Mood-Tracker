@@ -1,6 +1,7 @@
 // settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mood_tracker/features/mood_tracking/widgets/app_bottom_navigation_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -10,22 +11,17 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Настройки'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/mood'),
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('Пример настройки'),
+            const Text('Пример настройки'),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () => context.go('/home'),
@@ -34,6 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 2),
     );
   }
 }
