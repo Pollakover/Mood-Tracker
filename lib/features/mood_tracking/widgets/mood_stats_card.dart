@@ -1,23 +1,19 @@
-// lib/features/mood_tracking/widgets/mood_stats_card.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mood_tracker/features/mood_tracking/models/mood_entry.dart';
 import 'package:mood_tracker/shared/app_constants.dart';
-import 'package:mood_tracker/shared/service_locator.dart';
-import 'package:mood_tracker/features/mood_tracking/models/record_repository.dart';
+import 'package:mood_tracker/shared/providers.dart';
 
-class MoodStatsCard extends StatelessWidget {
-  final Map<DateTime, MoodEntry> entries;
-  final DateTime currentMonth;
-
-  const MoodStatsCard({
-    super.key,
-    required this.entries,
-    required this.currentMonth,
-  });
+class MoodStatsCard extends ConsumerWidget {
+  const MoodStatsCard({super.key, required Map<DateTime, MoodEntry> entries, required DateTime currentMonth});
 
   @override
-  Widget build(BuildContext context) {
-    final monthlyStats = _calculateMonthlyStats();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(moodEntriesProvider);
+    final currentMonth = ref.watch(currentMonthProvider);
+    final repository = ref.read(recordRepositoryProvider);
+
+    final monthlyStats = _calculateMonthlyStats(repository.getAll(), currentMonth);
     final totalDaysWithEntries = monthlyStats.values.fold(0, (sum, count) => sum + count);
 
     if (totalDaysWithEntries == 0) {
@@ -42,18 +38,14 @@ class MoodStatsCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxHeight: 300,
-              ),
+              constraints: const BoxConstraints(maxHeight: 300),
               child: ListView(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: _buildMoodProgressBars(context, monthlyStats, totalDaysWithEntries),
               ),
             ),
-
             const SizedBox(height: 16),
-
             if (dominantMood != null)
               _buildDominantMoodSection(context, dominantMood, monthlyStats[dominantMood]!, totalDaysWithEntries),
           ],
@@ -62,18 +54,15 @@ class MoodStatsCard extends StatelessWidget {
     );
   }
 
-  Map<MoodConfig, int> _calculateMonthlyStats() {
+  Map<MoodConfig, int> _calculateMonthlyStats(List<MoodEntry> allEntries, DateTime currentMonth) {
     final stats = <MoodConfig, int>{};
-    final repository = getIt.get<RecordRepository>();
-    final allEntries = repository.getAll();
 
     for (final mood in AppConstants.availableMoods) {
       stats[mood] = 0;
     }
 
     for (final entry in allEntries) {
-      if (entry.date.year == currentMonth.year &&
-          entry.date.month == currentMonth.month) {
+      if (entry.date.year == currentMonth.year && entry.date.month == currentMonth.month) {
         final moodConfig = AppConstants.availableMoods.firstWhere(
               (mood) => mood.value == entry.moodValue,
           orElse: () => AppConstants.availableMoods[2],
@@ -84,6 +73,7 @@ class MoodStatsCard extends StatelessWidget {
     return stats;
   }
 
+  // Остальные методы остаются без изменений...
   List<Widget> _buildMoodProgressBars(BuildContext context, Map<MoodConfig, int> stats, int total) {
     return stats.entries.map((entry) {
       final mood = entry.key;
@@ -100,16 +90,10 @@ class MoodStatsCard extends StatelessWidget {
                 Text(mood.emoji, style: const TextStyle(fontSize: 16)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    mood.label,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  child: Text(mood.label, style: Theme.of(context).textTheme.bodyMedium),
                 ),
-                Text(
-                  '${percentage.toStringAsFixed(1)}%',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                Text('${percentage.toStringAsFixed(1)}%',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -139,7 +123,6 @@ class MoodStatsCard extends StatelessWidget {
 
   Widget _buildDominantMoodSection(BuildContext context, MoodConfig dominantMood, int count, int total) {
     final percentage = (count / total * 100);
-
     return Container(
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
@@ -155,29 +138,17 @@ class MoodStatsCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Преобладающее настроение',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                Text('Преобладающее настроение',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
-                Text(
-                  dominantMood.label,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Text(dominantMood.label,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
-          Text(
-            '${percentage.toStringAsFixed(0)}%',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          Text('${percentage.toStringAsFixed(0)}%',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -187,7 +158,6 @@ class MoodStatsCard extends StatelessWidget {
   MoodConfig? _findDominantMood(Map<MoodConfig, int> stats) {
     MoodConfig? dominantMood;
     int maxCount = 0;
-
     for (final entry in stats.entries) {
       if (entry.value > maxCount) {
         maxCount = entry.value;
@@ -205,26 +175,13 @@ class MoodStatsCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.analytics_outlined,
-              size: 48,
-              color: Colors.grey.shade400,
-            ),
+            Icon(Icons.analytics_outlined, size: 48, color: Colors.grey.shade400),
             const SizedBox(height: 12),
-            Text(
-              'Нет данных за этот месяц',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-              ),
-            ),
+            Text('Нет данных за этот месяц', style: TextStyle(color: Colors.grey.shade600)),
             const SizedBox(height: 8),
-            Text(
-              'Добавьте записи о настроении, чтобы увидеть статистику',
+            Text('Добавьте записи о настроении, чтобы увидеть статистику',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade500,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
           ],
         ),
@@ -233,10 +190,7 @@ class MoodStatsCard extends StatelessWidget {
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-      'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-    ];
+    const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
     return months[month - 1];
   }
 }

@@ -99,9 +99,6 @@ class MoodCalendar extends StatelessWidget {
 
   MoodConfig? _getMoodConfig(String? moodValue) {
     if (moodValue == null) return null;
-    return AppConstants.availableMoods.firstWhere(
-          (config) => config.value == moodValue,
-      orElse: () => AppConstants.availableMoods.first,
-    );
+    return AppConstants.getMoodConfig(moodValue);
   }
 }
